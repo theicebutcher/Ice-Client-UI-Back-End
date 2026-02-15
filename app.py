@@ -91,13 +91,11 @@ app = Flask(__name__)
 CORS(app, 
      resources={r"/api/*": {
          "origins": [
-             "https://ice-frontend-beta.vercel.app",
-             "https://ice-frontend-hyj0t73fw-alihamzasultans-projects.vercel.app",
              "https://*.vercel.app",
              "http://localhost:5173",
              "http://localhost:3000",
              "http://localhost:5175",
-             "https://cynx.vercel.app"
+             "https://cynx-clients.vercel.app"
          ],
          "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
          "allow_headers": ["Content-Type", "Authorization"],
