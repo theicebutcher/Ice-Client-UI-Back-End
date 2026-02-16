@@ -564,6 +564,16 @@ def get_user_favourites():
         logging.error(f"Error fetching user favourites: {e}")
         return jsonify({'error': str(e)}), 500
 
+
+@app.route('/api/get_showcase_favourites', methods=['GET'])
+def get_showcase_favourites():
+    try:
+        response = supabase.table('generated_images').select('id,image_url,prompt,template_type,template_name,created_at').eq('is_favourite', True).order('created_at', desc=True).limit(50).execute()
+        return jsonify({'data': response.data}), 200
+    except Exception as e:
+        logging.error(f"Error fetching showcase favourites: {e}")
+        return jsonify({'error': str(e), 'data': []}), 500
+
 @app.route('/api/template_selected', methods=['POST'])
 def handle_template_selection():
     data = request.get_json()
