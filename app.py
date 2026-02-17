@@ -217,11 +217,11 @@ LUDGE_TYPES = {
 ICE_CUBE_PROMPTS = {
     "Snofilled": """
     "task": "add the logo image into the center of the icecube",
-    "instructions": 
-        "effect": "Create a carved snow-filled appearance inside the ice sculpture, the image should not be colored and it should be engraved into the icecube with some depth",
+    "instructions":
+        "effect": "Create a carved snow-filled (frosted/etched) appearance inside the ice. The logo must look physically carved or engraved INTO the ice — like sandblasted or frosted glass. The logo MUST appear white/opaque-snow coloured with depth, NOT as a paper sticker, NOT as a printed image, NOT as a coloured element. There should be ZERO paper or sticker appearance.",
         "ice":"ice should be realistic WHITE ice, crystal clear, transparent, and completely free of any cloudiness, bubbles, or impurities. The ice must appear as pure white/clear ice like real ice sculptures. DO NOT make the ice blue - ice should be white or transparent like natural ice",
-        "Strict": "the logo should be engraved into the ice few centimeters with some depth. The ice cube shape MUST be an EXACT CUBE. Do NOT distort the cube shape.",
-        "Extra":"remove any background of the image before adding it to the icecube. PRESERVE THE LOGO FONT AND GEOMETRY EXACTLY."
+        "Strict": "the logo should be engraved into the ice with visible depth, like it was blasted or carved. The ice cube shape MUST be an EXACT CUBE. Do NOT distort the cube shape. ABSOLUTELY NO paper, sticker, coloured ink, or printed-paper effect allowed.",
+        "Extra":"remove any background of the image before adding it to the icecube. PRESERVE THE LOGO FONT AND GEOMETRY EXACTLY. The result should look like a real snow-filled carved ice cube — never like paper frozen inside ice."
     """,
     "Colored": """
     "task": "add the logo image into the center of the icecube ", 
@@ -232,12 +232,13 @@ ICE_CUBE_PROMPTS = {
         "ice":"ice should be realistic WHITE ice, crystal clear, transparent, and completely free of any cloudiness, bubbles, or impurities. The ice must appear as pure white/clear ice like real ice sculptures. DO NOT make the ice blue - ice should be white or transparent like natural ice"
     """,
     "Paper": """
-    "task": "add the image inside the icecube, ",
-    "instructions": 
-        "effect": "it should look like a colored printed paper is frozen into the icecube, the Logo should be colored with some white outline and transparent background and should be in center of the cube",
-        "Strict": "the image should be placed into the ice few centimeters in some depth",
-        "Extra":"remove any background of the image before adding it to the icecube",
-        "ice":"ice should be realistic WHITE ice, crystal clear, transparent, and completely free of any cloudiness, bubbles, or impurities. The ice must appear as pure white/clear ice like real ice sculptures. DO NOT make the ice blue - ice should be white or transparent like natural ice, increase the size of the cube if the logo doesnot fit"
+    "task": "add the image inside the icecube as a single unified paper piece",
+    "instructions":
+        "effect": "It should look like a single solid white rectangular paper is frozen inside the icecube. ALL text, words, logos, and design elements from the uploaded image MUST be combined together onto ONE single white paper background — do NOT separate any elements. The paper should have a solid opaque white background with all content printed on it as one unified piece, then frozen inside the ice.",
+        "paper_rule": "CRITICAL — treat every word, letter, graphic, and element in the uploaded image as a single group. Place the entire group on ONE solid white rectangular paper. Never split the design into separate floating elements. The paper is one solid rectangle with everything on it.",
+        "Strict": "the paper should be placed inside the ice a few centimeters deep. The ice cube shape MUST be an EXACT CUBE. Do NOT distort the cube shape.",
+        "Extra": "Do NOT use a transparent background for the paper — use solid white. The paper rectangle should clearly contain ALL elements from the source image together.",
+        "ice":"ice should be realistic WHITE ice, crystal clear, transparent, and completely free of any cloudiness, bubbles, or impurities. The ice must appear as pure white/clear ice like real ice sculptures. DO NOT make the ice blue - ice should be white or transparent like natural ice, increase the size of the cube if the logo does not fit"
     """,
     "Snofilled+paper": """
     "task": "add the image into the center of the icecube ",
@@ -842,12 +843,13 @@ def chatbot():
             "user_input": user_input,
             "Sculpture_instructions": {
                 "sculpture_preservation": {
-                    "shape": "Maintain EXACT shape, proportions, and details from the reference image",
-                    "alterations": "Do NOT alter, add, or remove any elements of the sculpture",
-                    "Extra_ice": "Do NOT ADD EXTRA ICE TO THE SCULPTURE, ONLY THE ORIGINAL IMAGE SHOULD BE USED",
-                    "contours": "Preserve all original contours and features precisely",
+                    "shape": "ABSOLUTE PRIORITY: Reproduce the EXACT shape, proportions, silhouette, and every structural detail from the reference image with 100% fidelity. This is a non-negotiable requirement.",
+                    "alterations": "ZERO alterations allowed to the sculpture body. Do NOT change, add, remove, simplify, or modify ANY physical element of the sculpture structure.",
+                    "Extra_ice": "Do NOT ADD EXTRA ICE TO THE SCULPTURE. ONLY the original sculpture shape from the reference image should be used. No extra elements, no extra ice blocks, no modifications.",
+                    "contours": "Every curve, edge, hole, channel, and surface feature from the reference image must be reproduced exactly. Pixel-perfect shape accuracy is mandatory.",
+                    "logo_separation": "CRITICAL: The sculpture body and the client logo are TWO COMPLETELY SEPARATE ELEMENTS. The sculpture body shape must NEVER be changed to accommodate a logo. The logo is placed ON TOP of the finished sculpture as a flat paper card — it does not alter the sculpture in any way.",
                     "size": "Sculpture should be large, around 6 to 7 feet tall or wide accordingly",
-                    "color_coding": "CRITICAL: Blue color in the input reference image is ONLY A TEMPLATE INDICATOR showing where ice should be. The OUTPUT sculpture MUST BE COMPLETELY WHITE/CLEAR TRANSPARENT ICE, NOT BLUE. Light blue in reference means recess in the ice. Any other color in reference means it is made of paper and not ice. TRANSFORM ALL BLUE PARTS INTO REALISTIC WHITE/CLEAR TRANSPARENT ICE IN THE FINAL IMAGE. The final result should NEVER show blue ice - only clear/white transparent ice.",
+                    "color_coding": "CRITICAL: Blue color in the input reference image is ONLY A TEMPLATE INDICATOR showing where ice should be. The OUTPUT sculpture MUST BE COMPLETELY WHITE/CLEAR TRANSPARENT ICE, NOT BLUE. Light blue in reference means recess in the ice. TRANSFORM ALL BLUE PARTS INTO REALISTIC WHITE/CLEAR TRANSPARENT ICE IN THE FINAL IMAGE. The final result should NEVER show blue ice - only clear/white transparent ice.",
                     "CRITICAL_NO_NEW_SCULPTURES": "DO NOT create new sculptures like deer, bear, animals, or any other sculptures that are not in the reference image. ONLY render what is shown in the uploaded reference images. If toppers are added, place them ON TOP of the existing sculpture - do not replace or add new main sculptures"
                 },
                 "material_properties": {
@@ -913,11 +915,18 @@ def chatbot():
                     "scale": "The sculpture should appear as if photographed from 6-8 feet away, showing the full context and environment, not a tight close-up"
                 },
                 "sculpture_image_rules": {
-                    "stickers": {
-                        "condition": "If any detail in the sculpture is other than blue",
-                        "appearance": "It should look like a colored paper sticker pasted on the ice, not made of ice. NO white background or frosted layer around the sticker"
+                    "logo_placement": {
+                        "condition": "When a logo or branding image is provided separately from the sculpture reference",
+                        "appearance": "The logo must be applied as a PRINTED PAPER CARD element placed physically ON the surface of the ice sculpture — exactly like a real paper sticker or printed card attached to the ice. The logo card MUST have a solid white or colored rectangular/shaped background behind all text and graphics, matching the shape of the logo content. The logo element should sit flat against the ice surface and be clearly readable. It should look like a real printed paper sign placed on real ice — NOT engraved, NOT etched, NOT carved into the ice.",
+                        "background": "CRITICAL: The logo MUST have a solid white or colored background card behind it. The background shape should match the content — rectangular for text, shaped for graphic logos. This matches how real ice sculptures display client branding: a printed paper or vinyl card physically attached to the ice face.",
+                        "do_not": "Do NOT engrave or etch the logo into the ice. Do NOT make the logo transparent or frosted. Do NOT remove the white/colored background from the logo.",
+                        "real_example": "Look at real ice sculptures: logos appear as colored paper cards or printed signs placed on the ice surface, with clear white or colored backgrounds. Replicate this exact look."
                     },
-                    "transparency": "The ice must remain completely transparent and clear throughout. NO white frosted layers, NO opaque sections, NO milky areas. Only the embedded logos/text should have color, everything else is clear transparent ice"
+                    "sculpture_body": {
+                        "rule": "The ice sculpture body itself MUST remain 100% identical to the reference image. Do NOT change the shape, size, proportions, details, or any physical aspect of the sculpture. The ONLY addition allowed is the logo card placed ON the surface.",
+                        "strict": "ZERO modifications to the sculpture shape. The sculpture must look exactly like the reference photo — same structure, same details, same everything. Only add the logo as a flat paper card element on top of the existing ice surface."
+                    },
+                    "transparency": "The ice sculpture body must remain completely transparent and clear throughout. NO white frosted layers, NO opaque sections, NO milky areas. Only the logo card element should have color/background, everything else is clear transparent ice."
                 },
                 "modular_components": {
                     "topper": {
